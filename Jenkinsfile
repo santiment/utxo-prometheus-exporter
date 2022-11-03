@@ -10,10 +10,11 @@ podTemplate(label: 'utxo-prometheus-exporter', containers: [
         def PROJECT_NAME = "utxo-prometheus-exporter"
         def VERSION = "0.8"
 
-        sh "docker build -t santiment/${PROJECT_NAME}:latest ."
+        sh "docker build -t santiment/${PROJECT_NAME}:latest -t santiment/${PROJECT_NAME}:${VERSION} ."
 
         withDockerRegistry([ credentialsId: "dockerHubCreds", url: "" ]) {
-        sh "docker push santiment/${PROJECT_NAME}:latest"
+          sh "docker push santiment/${PROJECT_NAME}:latest"
+          sh "docker push santiment/${PROJECT_NAME}:${VERSION}"
         }
       }
     }

@@ -1,7 +1,7 @@
 FROM docker.io/library/python:3.8-alpine3.15
 
-LABEL org.opencontainers.image.title "bitcoin-prometheus-exporter"
-LABEL org.opencontainers.image.description "Prometheus exporter for bitcoin nodes"
+LABEL org.opencontainers.image.title "utxo-prometheus-exporter"
+LABEL org.opencontainers.image.description "Prometheus exporter for UTXO blockchain nodes"
 
 # Dependencies for python-bitcoinlib and sanity check.
 RUN apk --no-cache add \
@@ -15,9 +15,9 @@ RUN pip install --no-cache-dir \
         python-bitcoinlib \
         riprova
 
-RUN mkdir -p /monitor
-ADD ./bitcoind-monitor.py /monitor
+RUN mkdir -p /exporter
+ADD ./utxo_prometheus_exporter.py /exporter
 
 USER nobody
 
-CMD ["/monitor/bitcoind-monitor.py"]
+CMD ["/exporter/utxo_prometheus_exporter.py"]

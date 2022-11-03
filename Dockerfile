@@ -1,7 +1,7 @@
 FROM docker.io/library/python:3.8-alpine3.15
 
-LABEL org.opencontainers.image.title "bitcoin-prometheus-exporter"
-LABEL org.opencontainers.image.description "Prometheus exporter for bitcoin nodes"
+LABEL org.opencontainers.image.title "utxo-prometheus-exporter"
+LABEL org.opencontainers.image.description "Prometheus exporter for UTXO blockchain nodes"
 
 # Dependencies for python-bitcoinlib and sanity check.
 RUN apk --no-cache add \

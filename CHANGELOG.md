@@ -1,12 +1,26 @@
 # Changelog
 Changes to the project.
 
-## [Unreleased]
+## [0.8.0] - 2022-11-02
 
-### Changed
-- Update docker base image to be fully qualifed for better podman support ([#25][pr-25])
+### Added
+- It now support other UTXO blockchains besides bitcoin core
+- Ability to control which RPC calls will be made by supplying the following env vars:
+* `FETCH_UPTIME`
+* `FETCH_MEMINFO`
+* `FETCH_BLOCKCHAININFO`
+* `FETCH_NETWORKINFO`
+* `FETCH_CHAINTIPS`
+* `FETCH_MEMPOOLINFO`
+* `FETCH_NETTOTALS`
+* `FETCH_RPCINFO`
+* `FETCH_TXSTATS`
+* `FETCH_BANNED`
+* `FETCH_SMART_FEES`
+* `FETCH_HASHP_BLOCKS`
 
-[pr-25]: https://github.com/jvstein/bitcoin-prometheus-exporter/pull/25
+- RPC calling and error handling was reworked to be per every call so now if a call fails it won't
+affect the other ones.
 
 
 ## [0.7.0] - 2022-01-14

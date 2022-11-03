@@ -4,6 +4,8 @@ from distutils.util import strtobool
 # Set up logging to look similar to bitcoin logs (UTC).
 LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
+UTXO_NODE_BLOCKCHAIN_NAME = os.environ.get("UTXO_NODE_BLOCKCHAIN_NAME", "bitcoin")
+
 UTXO_NODE_RPC_SCHEME = os.environ.get("UTXO_NODE_RPC_SCHEME", "http")
 UTXO_NODE_RPC_HOST = os.environ.get("UTXO_NODE_RPC_HOST", "localhost")
 UTXO_NODE_RPC_PORT = os.environ.get("UTXO_NODE_RPC_PORT", "8332")

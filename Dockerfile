@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir \
         riprova
 
 RUN mkdir -p /exporter
-ADD ./utxo_prometheus_exporter.py /exporter
+COPY . /exporter
 
 USER nobody
 

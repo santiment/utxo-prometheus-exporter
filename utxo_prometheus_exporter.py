@@ -46,11 +46,10 @@ RETRY_EXCEPTIONS = (InWarmupError, ConnectionError, socket.timeout)
 
 RpcResult = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
 
-
 def on_retry(err: Exception, next_try: float) -> None:
     err_type = type(err)
     exception_name = err_type.__module__ + "." + err_type.__name__
-    EXPORTER_ERRORS.labels(**{"type": exception_name}).inc()
+    EXPORTER_ERRORS.labels(**{"type": exception_name, "blockchain": UTXO_NODE_BLOCKCHAIN_NAME}).inc()
     logger.error("Retry after exception %s: %s", exception_name, err)
 
 
@@ -120,14 +119,14 @@ def do_smartfee(num_blocks: int) -> None:
     smartfee = exec_rpc_call("estimatesmartfee", num_blocks).get("feerate")
     if smartfee is not None:
         gauge = smartfee_gauge(num_blocks)
-        gauge.set(smartfee)
+        gauge.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(smartfee)
 
 
 def do_hashps_gauge(num_blocks: int) -> None:
     hps = float(exec_rpc_call("getnetworkhashps", num_blocks))
     if hps is not None:
         gauge = hashps_gauge(num_blocks)
-        gauge.set(hps)
+        gauge.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(hps)
 
 
 def sigterm_handler(signal, frame) -> None:
@@ -137,98 +136,112 @@ def sigterm_handler(signal, frame) -> None:
 def exception_count(e: Exception) -> None:
     err_type = type(e)
     exception_name = err_type.__module__ + "." + err_type.__name__
-    EXPORTER_ERRORS.labels(**{"type": exception_name}).inc()
+    EXPORTER_ERRORS.labels(**{"type": exception_name, "blockchain": UTXO_NODE_BLOCKCHAIN_NAME}).inc()
 
 
 def fetch_uptime() -> None:
     uptime = exec_rpc_call("uptime")
     if uptime is not None:
-        UTXO_NODE_UPTIME.set(uptime)
+        UTXO_NODE_UPTIME.labels(blockchain=f"{UTXO_NODE_BLOCKCHAIN_NAME}").set(uptime)
 
 def fetch_meminfo() -> None:
     meminfo = exec_rpc_call("getmemoryinfo", "stats")["locked"]
     if meminfo is not None:
-        UTXO_NODE_MEMINFO_USED.set(meminfo["used"])
-        UTXO_NODE_MEMINFO_FREE.set(meminfo["free"])
-        UTXO_NODE_MEMINFO_TOTAL.set(meminfo["total"])
-        UTXO_NODE_MEMINFO_LOCKED.set(meminfo["locked"])
-        UTXO_NODE_MEMINFO_CHUNKS_USED.set(meminfo["chunks_used"])
-        UTXO_NODE_MEMINFO_CHUNKS_FREE.set(meminfo["chunks_free"])
+        UTXO_NODE_MEMINFO_USED.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(meminfo["used"])
+        UTXO_NODE_MEMINFO_FREE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(meminfo["free"])
+        UTXO_NODE_MEMINFO_TOTAL.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(meminfo["total"])
+        UTXO_NODE_MEMINFO_LOCKED.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(meminfo["locked"])
+        UTXO_NODE_MEMINFO_CHUNKS_USED.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(meminfo["chunks_used"])
+        UTXO_NODE_MEMINFO_CHUNKS_FREE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(meminfo["chunks_free"])
 
 def fetch_blockchaininfo() -> None:
     blockchaininfo = exec_rpc_call("getblockchaininfo")
     if blockchaininfo is not None:
-        UTXO_NODE_BLOCKS.set(blockchaininfo["blocks"])
-        UTXO_NODE_DIFFICULTY.set(blockchaininfo["difficulty"])
-        UTXO_NODE_SIZE_ON_DISK.set(blockchaininfo["size_on_disk"])
-        UTXO_NODE_VERIFICATION_PROGRESS.set(blockchaininfo["verificationprogress"])
+        UTXO_NODE_BLOCKS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["blocks"])
+        UTXO_NODE_DIFFICULTY.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["difficulty"])
+        UTXO_NODE_SIZE_ON_DISK.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["size_on_disk"])
+        UTXO_NODE_VERIFICATION_PROGRESS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(
+            blockchaininfo["verificationprogress"]
+        )
 
         latest_blockstats = getblockstats(str(blockchaininfo["bestblockhash"]))
         if latest_blockstats is not None:
-            UTXO_NODE_LATEST_BLOCK_SIZE.set(latest_blockstats["total_size"])
-            UTXO_NODE_LATEST_BLOCK_TXS.set(latest_blockstats["txs"])
-            UTXO_NODE_LATEST_BLOCK_HEIGHT.set(latest_blockstats["height"])
-            UTXO_NODE_LATEST_BLOCK_WEIGHT.set(latest_blockstats["total_weight"])
-            UTXO_NODE_LATEST_BLOCK_INPUTS.set(latest_blockstats["ins"])
-            UTXO_NODE_LATEST_BLOCK_OUTPUTS.set(latest_blockstats["outs"])
-            UTXO_NODE_LATEST_BLOCK_VALUE.set(latest_blockstats["total_out"] / SATS_PER_COIN)
-            UTXO_NODE_LATEST_BLOCK_FEE.set(latest_blockstats["totalfee"] / SATS_PER_COIN)
+            UTXO_NODE_LATEST_BLOCK_SIZE.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["total_size"])
+            UTXO_NODE_LATEST_BLOCK_TXS.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["txs"])
+            UTXO_NODE_LATEST_BLOCK_HEIGHT.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["height"])
+            UTXO_NODE_LATEST_BLOCK_WEIGHT.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["total_weight"])
+            UTXO_NODE_LATEST_BLOCK_INPUTS.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["ins"])
+            UTXO_NODE_LATEST_BLOCK_OUTPUTS.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["outs"])
+            UTXO_NODE_LATEST_BLOCK_VALUE.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["total_out"] / SATS_PER_COIN)
+            UTXO_NODE_LATEST_BLOCK_FEE.labels(
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(latest_blockstats["totalfee"] / SATS_PER_COIN)
 
 def fetch_networkinfo() -> None:
     networkinfo = exec_rpc_call("getnetworkinfo")
     if networkinfo is not None:
-        UTXO_NODE_PEERS.set(networkinfo["connections"])
+        UTXO_NODE_PEERS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(networkinfo["connections"])
         if "connections_in" in networkinfo:
-            UTXO_NODE_CONN_IN.set(networkinfo["connections_in"])
+            UTXO_NODE_CONN_IN.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(networkinfo["connections_in"])
         if "connections_out" in networkinfo:
-            UTXO_NODE_CONN_OUT.set(networkinfo["connections_out"])
+            UTXO_NODE_CONN_OUT.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(networkinfo["connections_out"])
 
-        UTXO_NODE_SERVER_VERSION.set(networkinfo["version"])
-        UTXO_NODE_PROTOCOL_VERSION.set(networkinfo["protocolversion"])
+        UTXO_NODE_SERVER_VERSION.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(networkinfo["version"])
+        UTXO_NODE_PROTOCOL_VERSION.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(networkinfo["protocolversion"])
 
         if networkinfo["warnings"]:
-            UTXO_NODE_WARNINGS.inc()
+            UTXO_NODE_WARNINGS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).inc()
 
 def fetch_chaintips() -> None:
     chaintips = exec_rpc_call("getchaintips")
     if chaintips is not None:
-        UTXO_NODE_NUM_CHAINTIPS.set(len(chaintips))
+        UTXO_NODE_NUM_CHAINTIPS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(len(chaintips))
 
 def fetch_mempoolinfo() -> None:
     mempool = exec_rpc_call("getmempoolinfo")
     if mempool is not None:
-        UTXO_NODE_MEMPOOL_BYTES.set(mempool["bytes"])
-        UTXO_NODE_MEMPOOL_SIZE.set(mempool["size"])
-        UTXO_NODE_MEMPOOL_USAGE.set(mempool["usage"])
+        UTXO_NODE_MEMPOOL_BYTES.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["bytes"])
+        UTXO_NODE_MEMPOOL_SIZE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["size"])
+        UTXO_NODE_MEMPOOL_USAGE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["usage"])
         if "unbroadcastcount" in mempool:
-            UTXO_NODE_MEMPOOL_UNBROADCAST.set(mempool["unbroadcastcount"])
+            UTXO_NODE_MEMPOOL_UNBROADCAST.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["unbroadcastcount"])
 
 def fetch_nettotals() -> None:
     nettotals = exec_rpc_call("getnettotals")
     if nettotals is not None:
-        UTXO_NODE_TOTAL_BYTES_RECV.set(nettotals["totalbytesrecv"])
-        UTXO_NODE_TOTAL_BYTES_SENT.set(nettotals["totalbytessent"])
+        UTXO_NODE_TOTAL_BYTES_RECV.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(nettotals["totalbytesrecv"])
+        UTXO_NODE_TOTAL_BYTES_SENT.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(nettotals["totalbytessent"])
 
 def fetch_rpcinfo() -> None:
     rpcinfo = exec_rpc_call("getrpcinfo")
     if rpcinfo is not None:
         # Subtract one because we don't want to count the "getrpcinfo" call itself
-        UTXO_NODE_RPC_ACTIVE.set(len(rpcinfo["active_commands"]) - 1)
+        UTXO_NODE_RPC_ACTIVE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(len(rpcinfo["active_commands"]) - 1)
 
 def fetch_txstats() -> None:
     txstats = exec_rpc_call("getchaintxstats")
     if txstats is not None:
-        UTXO_NODE_TXCOUNT.set(txstats["txcount"])
+        UTXO_NODE_TXCOUNT.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(txstats["txcount"])
 
 def fetch_banned() -> None:
     banned = exec_rpc_call("listbanned")
     if banned is not None:
         for ban in banned:
             UTXO_NODE_BAN_CREATED.labels(
-                address=ban["address"], reason=ban.get("ban_reason", "manually added")
+                address=ban["address"],
+                reason=ban.get("ban_reason", "manually added"),
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME
             ).set(ban["ban_created"])
             UTXO_NODE_BANNED_UNTIL.labels(
-                address=ban["address"], reason=ban.get("ban_reason", "manually added")
+                address=ban["address"],
+                reason=ban.get("ban_reason", "manually added"),
+                blockchain=UTXO_NODE_BLOCKCHAIN_NAME
             ).set(ban["banned_until"])
 
 
@@ -311,7 +324,7 @@ def main():
             fetch(func)
 
         duration = datetime.now() - process_start
-        PROCESS_TIME.inc(duration.total_seconds())
+        PROCESS_TIME.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).inc(duration.total_seconds())
         logger.info("Fetch took %s seconds", duration)
         last_refresh = process_start
 

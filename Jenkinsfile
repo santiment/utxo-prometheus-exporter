@@ -8,7 +8,7 @@ podTemplate(label: 'utxo-prometheus-exporter', containers: [
       container('docker') {
         def scmVars = checkout scm
         def PROJECT_NAME = "utxo-prometheus-exporter"
-        def VERSION = "0.8"
+        def VERSION = "1.0.0"
 
         sh "docker build -t santiment/${PROJECT_NAME}:latest -t santiment/${PROJECT_NAME}:${VERSION} ."
 

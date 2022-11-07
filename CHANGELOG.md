@@ -1,6 +1,17 @@
 # Changelog
 Changes to the project.
 
+## [1.0.0] - 2022-11-04
+
+**BREAKING CHANGE: All prometheus metrics and env variables has been renamed.**
+
+### Added
+- Prometheus metric names have `utxo_node` prefix instead of the old `bitcoin`
+- Env variables have `UTXO_NODE` prefix instead of the old `BITCOIN`
+- All prometheus metrics have label `blockchain` which can be set with `UTXO_NODE_BLOCKCHAIN_NAME` env variable.
+- Configuration has been extracted to separate file - `config.py`
+- Prometheus metrics have been extracted to separate file - `prometheus_metrics.py`
+
 ## [0.8.0] - 2022-11-02
 
 ### Added

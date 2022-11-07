@@ -1,34 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "6.4.1"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -38,23 +8,40 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
+  "id": 601,
+  "iteration": 1667565405711,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Number of blocks created per day using different trailing rates.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -63,6 +50,7 @@
         "x": 0,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 18,
       "legend": {
         "avg": false,
@@ -77,9 +65,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -89,33 +78,55 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "floor(sum(rate(bitcoin_blocks[3h])) * 3600 * 24)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "floor(sum(rate(utxo_node_blocks{blockchain=\"$blockchain\"}[3h])) * 3600 * 24)",
           "hide": false,
+          "interval": "",
           "legendFormat": "3h",
           "refId": "C"
         },
         {
-          "expr": "floor(sum(rate(bitcoin_blocks[6h])) * 3600 * 24)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "floor(sum(rate(utxo_node_blocks{blockchain=\"$blockchain\"}[6h])) * 3600 * 24)",
           "hide": false,
+          "interval": "",
           "legendFormat": "6h",
           "refId": "E"
         },
         {
-          "expr": "floor(sum(rate(bitcoin_blocks[12h])) * 3600 * 24)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "floor(sum(rate(utxo_node_blocks{blockchain=\"$blockchain\"}[12h])) * 3600 * 24)",
           "hide": false,
+          "interval": "",
           "legendFormat": "12h",
           "refId": "A"
         },
         {
-          "expr": "floor(sum(rate(bitcoin_blocks[7d])) * 3600 * 24)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "floor(sum(rate(utxo_node_blocks{blockchain=\"$blockchain\"}[7d])) * 3600 * 24)",
+          "interval": "",
           "legendFormat": "7d",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Block Creation Rate",
       "tooltip": {
         "shared": true,
@@ -124,33 +135,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:86",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:87",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -158,8 +162,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Difficulty value",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -168,6 +181,7 @@
         "x": 12,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 6,
       "legend": {
         "avg": false,
@@ -183,9 +197,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -195,17 +210,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(bitcoin_difficulty)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vwCxHkxnk"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_difficulty{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "difficulty",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Difficulty",
       "tooltip": {
         "shared": true,
@@ -214,34 +233,27 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:162",
           "decimals": 1,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:163",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -249,8 +261,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Estimated network hashes per second",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -259,6 +280,7 @@
         "x": 0,
         "y": 8
       },
+      "hiddenSeries": false,
       "id": 8,
       "legend": {
         "avg": false,
@@ -274,9 +296,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -286,24 +309,34 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(bitcoin_hashps)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_hashps{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "120-blocks",
           "refId": "B"
         },
         {
-          "expr": "avg(bitcoin_hashps_neg1)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_hashps_neg1{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "last-difficulty",
           "refId": "C"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Network Hash Rate",
       "tooltip": {
         "shared": true,
@@ -312,34 +345,27 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:238",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:239",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -347,8 +373,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Value of the block transactions in BTC.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -357,6 +392,7 @@
         "x": 12,
         "y": 8
       },
+      "hiddenSeries": false,
       "id": 2,
       "legend": {
         "avg": false,
@@ -372,9 +408,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -384,17 +421,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(bitcoin_latest_block_value)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "vwCxHkxnk"
+          },
+          "exemplar": true,
+          "expr": "sum(utxo_node_latest_block_value{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "BTC",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Block value",
       "tooltip": {
         "shared": true,
@@ -403,33 +444,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:388",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:389",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -437,8 +471,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Number of tips seen in the chain.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -447,6 +490,7 @@
         "x": 0,
         "y": 16
       },
+      "hiddenSeries": false,
       "id": 12,
       "legend": {
         "avg": false,
@@ -462,9 +506,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -474,17 +519,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(bitcoin_num_chaintips)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_num_chaintips{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "tips",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Chain Branches",
       "tooltip": {
         "shared": true,
@@ -493,35 +542,28 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:464",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:465",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -529,8 +571,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Sent and received traffic rates",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -539,6 +590,7 @@
         "x": 12,
         "y": 16
       },
+      "hiddenSeries": false,
       "id": 10,
       "legend": {
         "avg": false,
@@ -554,9 +606,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -566,24 +619,34 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(bitcoin_total_bytes_sent[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "sum(irate(utxo_node_total_bytes_sent{blockchain=\"$blockchain\"}[5m]))",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "sent",
           "refId": "A"
         },
         {
-          "expr": "-sum(irate(bitcoin_total_bytes_recv[10m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "-sum(irate(utxo_node_total_bytes_recv{blockchain=\"$blockchain\"}[10m]))",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "received",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Network traffic",
       "tooltip": {
         "shared": true,
@@ -592,34 +655,27 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:540",
           "decimals": 0,
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:541",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -627,8 +683,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The estimated smart fee for confirmation of transactions in a given number of blocks.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -637,6 +702,7 @@
         "x": 0,
         "y": 24
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "avg": false,
@@ -652,9 +718,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -664,7 +731,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(bitcoin_est_smart_fee_2)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_est_smart_fee_2{blockchain=\"$blockchain\"})",
           "format": "time_series",
           "interval": "2m",
           "intervalFactor": 1,
@@ -672,31 +744,47 @@
           "refId": "A"
         },
         {
-          "expr": "avg(bitcoin_est_smart_fee_20)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_est_smart_fee_20{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "20-blocks",
           "refId": "B"
         },
         {
-          "expr": "avg(bitcoin_est_smart_fee_3)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_est_smart_fee_3{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "3-blocks",
           "refId": "C"
         },
         {
-          "expr": "avg(bitcoin_est_smart_fee_5)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_est_smart_fee_5{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "5-blocks",
           "refId": "D"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Estimated Fee",
       "tooltip": {
         "shared": true,
@@ -705,33 +793,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:616",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:617",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -739,8 +820,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The Bitcoin protocol and server versions.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -749,6 +839,7 @@
         "x": 12,
         "y": 24
       },
+      "hiddenSeries": false,
       "id": 14,
       "legend": {
         "avg": false,
@@ -764,9 +855,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -785,24 +877,34 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(bitcoin_protocol_version)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_protocol_version{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "protocol",
           "refId": "A"
         },
         {
-          "expr": "avg(bitcoin_server_version)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "avg(utxo_node_server_version{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "server",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Versions",
       "tooltip": {
         "shared": true,
@@ -811,34 +913,28 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
+          "$$hashKey": "object:692",
           "format": "none",
           "label": "protocol version",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:693",
           "format": "none",
           "label": "server version",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -846,8 +942,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Number of peers that have been banned and the reason for the ban.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -856,6 +961,7 @@
         "x": 0,
         "y": 32
       },
+      "hiddenSeries": false,
       "id": 16,
       "legend": {
         "avg": false,
@@ -871,9 +977,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.3.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -883,24 +990,34 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "count(bitcoin_banned_until) by (reason)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "count(utxo_node_banned_until{blockchain=\"$blockchain\"}) by (reason)",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "ban - {{ reason }}",
           "refId": "B"
         },
         {
-          "expr": "sum(bitcoin_peers)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "exemplar": true,
+          "expr": "sum(utxo_node_peers{blockchain=\"$blockchain\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "peers",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Peers",
       "tooltip": {
         "shared": true,
@@ -909,49 +1026,85 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
+          "$$hashKey": "object:842",
           "decimals": 0,
           "format": "none",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:843",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
-  "refresh": "5m",
-  "schemaVersion": 20,
+  "refresh": false,
+  "schemaVersion": 34,
   "style": "dark",
-  "tags": [
-    "bitcoin"
-  ],
+  "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "litecoin",
+          "value": "litecoin"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(utxo_node_blocks, blockchain)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "blockchain",
+        "options": [],
+        "query": {
+          "query": "label_values(utxo_node_blocks, blockchain)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus-aws-stage",
+          "value": "Prometheus-aws-stage"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
-    "from": "now-1w",
-    "to": "now"
+    "from": "2022-11-04T09:32:47.488Z",
+    "to": "2022-11-04T09:35:17.358Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -979,7 +1132,8 @@
     ]
   },
   "timezone": "",
-  "title": "Bitcoin",
-  "uid": "OTLC2jHWz",
-  "version": 1
+  "title": "utxo-node-prometheus-exporter Copy",
+  "uid": "eya1_Wv4z",
+  "version": 5,
+  "weekStart": ""
 }

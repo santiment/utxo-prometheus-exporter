@@ -164,6 +164,9 @@ def fetch_blockchaininfo() -> None:
             blockchaininfo["verificationprogress"]
         )
 
+def fetch_blockstats() -> None:
+    blockchaininfo = exec_rpc_call("getblockchaininfo")
+    if blockchaininfo is not None:
         latest_blockstats = getblockstats(str(blockchaininfo["bestblockhash"]))
         if latest_blockstats is not None:
             UTXO_NODE_LATEST_BLOCK_SIZE.labels(
@@ -261,6 +264,8 @@ def build_functions_dict() -> Dict[str, Callable[[], None]]:
         functions_dict['meminfo'] = fetch_meminfo
     if FETCH_BLOCKCHAININFO:
         functions_dict['blockchaininfo'] = fetch_blockchaininfo
+    if FETCH_BLOCKSTATS:
+        functions_dict['blockstats'] = fetch_blockstats
     if FETCH_NETWORKINFO:
         functions_dict['networkinfo'] = fetch_networkinfo
     if FETCH_CHAINTIPS:

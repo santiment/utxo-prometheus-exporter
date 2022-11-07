@@ -86,8 +86,6 @@ spec:
               value: "rpc-user"
             - name: UTXO_NODE_RPC_PASSWORD
               value: "rpc-password"
-            - name: REFRESH_SECONDS
-              value: "1"
             - name: METRICS_PORT
               value: "9335"
 ```

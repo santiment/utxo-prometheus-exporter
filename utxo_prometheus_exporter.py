@@ -287,10 +287,10 @@ def build_functions_dict() -> Dict[str, Callable[[], None]]:
 
     return functions_dict
 
-def fetch(fetch_function):
+def fetch(func_name, fetch_function):
     # Allow riprova.MaxRetriesExceeded and unknown exceptions to crash the process.
     try:
-        logger.info("Fetching metric...")
+        logger.info("Fetching metric: " + func_name)
         fetch_function()
     except riprova.exceptions.RetryError as e:
         logger.error("Fetch failed during retry. Cause: " + str(e))
@@ -326,7 +326,7 @@ def main():
             return app(*args, **kwargs)
 
         for func_name, func in functions_dict.items():
-            fetch(func)
+            fetch(func_name, func)
 
         duration = datetime.now() - process_start
         PROCESS_TIME.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).inc(duration.total_seconds())

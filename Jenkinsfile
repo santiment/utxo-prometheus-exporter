@@ -6,6 +6,7 @@ podTemplate(label: 'utxo-prometheus-exporter', containers: [
   node('utxo-prometheus-exporter') {
     stage('Build Image') {
       container('docker') {
+        sh(returnStdout: true, script: "git tag --contains").trim()
         def scmVars = checkout scm
         def PROJECT_NAME = "utxo-prometheus-exporter"
         def VERSION = "1.0.0"

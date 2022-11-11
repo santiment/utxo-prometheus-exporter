@@ -10,7 +10,7 @@ podTemplate(label: 'utxo-prometheus-exporter', containers: [
         // git fetch --tags
         // sh(returnStdout: true, script: "git tag --contains").trim()
         def scmVars = checkout scm
-        echo scm
+        echo "${scm}"
         def PROJECT_NAME = "utxo-prometheus-exporter"
         def VERSION = "1.0.0"
 

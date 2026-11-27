@@ -1,6 +1,21 @@
 # Changelog
 Changes to the project.
 
+## [1.1.0] - 2026-11-27
+
+Merged upstream [jvstein/bitcoin-prometheus-exporter] up to `6e2e556` (v0.9.0 + #42). Upstream entries
+below are listed under their own versions; metric names here carry the `utxo_node` prefix and `blockchain` label.
+
+**BREAKING CHANGE: `utxo_node_ban_created` and `utxo_node_banned_until` are now disabled by default.**
+Re-enable with `BAN_ADDRESS_METRICS=true`. `utxo_node_banned_peers` gives the summary count instead.
+
+### Changed
+- Upgrade to Python 3.13; replace removed `distutils.util.strtobool` in `config.py`.
+- Remove unused `RETRIES` variable.
+
+[jvstein/bitcoin-prometheus-exporter]: https://github.com/jvstein/bitcoin-prometheus-exporter
+
+
 ## [1.0.0] - 2022-11-04
 
 **BREAKING CHANGE: All prometheus metrics and env variables has been renamed.**
@@ -32,6 +47,43 @@ Changes to the project.
 
 - RPC calling and error handling was reworked to be per every call so now if a call fails it won't
 affect the other ones.
+
+
+## [upstream 6e2e556] - 2025-10-27
+
+### Fixed
+- Fix log level used for exception ([#42][issue-42])
+
+[issue-42]: https://github.com/jvstein/bitcoin-prometheus-exporter/issues/42
+
+
+## [upstream 0.9.0] - 2025-09-24
+
+### Changed
+- Exporter now exits cleanly on SIGTERM. SIGINT now exits with a non-zero code. ([#38][pr-38])
+- Username and password are now properly handled when they contain URL reserved characters. ([#40][issue-40])
+
+[pr-38]: https://github.com/jvstein/bitcoin-prometheus-exporter/pull/38
+[issue-40]: https://github.com/jvstein/bitcoin-prometheus-exporter/issues/40
+
+
+## [upstream 0.8.0] - 2025-06-25
+
+BREAKING CHANGE: The `bitcoin_ban_created` and `bitcoin_banned_until` metrics are now disabled by default. Re-enable,
+if desired, using `BAN_ADDRESS_METRICS=true`.
+
+### Changed
+- Update docker base image to be fully qualifed for better podman support ([#25][pr-25])
+- Add metric for minimum fee ([#31][pr-31])
+- Upgrade to Python 3.13
+- Remove support for s390x docker image
+- Disable per-address metrics for banned peers. Add `bitcoin_banned_peers` metric for summary information. ([#13][issue-13])
+- Remove unused `RETRIES` variable ([#36][issue-36])
+
+[pr-25]: https://github.com/jvstein/bitcoin-prometheus-exporter/pull/25
+[pr-31]: https://github.com/jvstein/bitcoin-prometheus-exporter/pull/31
+[issue-13]: https://github.com/jvstein/bitcoin-prometheus-exporter/issues/13
+[issue-36]: https://github.com/jvstein/bitcoin-prometheus-exporter/issues/36
 
 
 ## [0.7.0] - 2022-01-14
@@ -194,7 +246,9 @@ as-is in the first commit.
 
 [python-bitcoinlib]: https://github.com/petertodd/python-bitcoinlib
 
-[Unreleased]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/jvstein/bitcoin-prometheus-exporter/compare/v0.4.0...v0.5.0

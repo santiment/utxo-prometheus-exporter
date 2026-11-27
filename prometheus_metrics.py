@@ -1,6 +1,8 @@
 from decimal import Decimal
 from prometheus_client import Gauge, Counter
 
+from config import BAN_ADDRESS_METRICS
+
 METRIC_PREFIX = "utxo_node"
 
 UTXO_NODE_BLOCKS = Gauge(f"{METRIC_PREFIX}_blocks", "Block height", labelnames=["blockchain"])
@@ -36,6 +38,10 @@ UTXO_NODE_MEMPOOL_SIZE = Gauge(
     labelnames=["blockchain"]
 )
 UTXO_NODE_MEMPOOL_USAGE = Gauge(f"{METRIC_PREFIX}_mempool_usage", "Total memory usage for the mempool", labelnames=["blockchain"])
+UTXO_NODE_MEMPOOL_MINFEE = Gauge(
+    f"{METRIC_PREFIX}_mempool_minfee", "Minimum fee rate in coins/kB for tx to be accepted in mempool",
+    labelnames=["blockchain"]
+)
 UTXO_NODE_MEMPOOL_UNBROADCAST = Gauge(
     f"{METRIC_PREFIX}_mempool_unbroadcast", "Number of transactions waiting for acknowledgment", labelnames=["blockchain"]
 )
@@ -71,12 +77,18 @@ UTXO_NODE_LATEST_BLOCK_FEE = Gauge(
     f"{METRIC_PREFIX}_latest_block_fee", "Total fee to process the latest block", labelnames=["blockchain"]
 )
 
-UTXO_NODE_BAN_CREATED = Gauge(
-    f"{METRIC_PREFIX}_ban_created", "Time the ban was created", labelnames=["address", "reason", "blockchain"]
+UTXO_NODE_BANNED_PEERS = Gauge(
+    f"{METRIC_PREFIX}_banned_peers", "Number of peers that have been banned", labelnames=["blockchain"]
 )
-UTXO_NODE_BANNED_UNTIL = Gauge(
-    f"{METRIC_PREFIX}_banned_until", "Time the ban expires", labelnames=["address", "reason", "blockchain"]
-)
+UTXO_NODE_BAN_CREATED = None
+UTXO_NODE_BANNED_UNTIL = None
+if BAN_ADDRESS_METRICS:
+    UTXO_NODE_BAN_CREATED = Gauge(
+        f"{METRIC_PREFIX}_ban_created", "Time the ban was created", labelnames=["address", "reason", "blockchain"]
+    )
+    UTXO_NODE_BANNED_UNTIL = Gauge(
+        f"{METRIC_PREFIX}_banned_until", "Time the ban expires", labelnames=["address", "reason", "blockchain"]
+    )
 
 UTXO_NODE_SERVER_VERSION = Gauge(f"{METRIC_PREFIX}_server_version", "The server version", labelnames=["blockchain"])
 UTXO_NODE_PROTOCOL_VERSION = Gauge(f"{METRIC_PREFIX}_protocol_version", "The protocol version of the server", labelnames=["blockchain"])

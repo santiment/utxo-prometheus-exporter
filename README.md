@@ -19,7 +19,7 @@ The main script is a modified version of [`bitcoin-monitor.py`][source-gist], up
 
 ### Run without docker
 
-1. You need to have python >= 3.8 and [pipenv]
+1. You need to have python >= 3.12 and [pipenv]
 2. Install dependencies:
 
     pipenv install
@@ -93,11 +93,11 @@ spec:
 ```
 
 ## Basic Testing
-There's a [`docker-compose.yml`](docker-compose.yml) file in the repository that references a test bitcoin node. To test changes to the exporter in docker, run the following commands.
+There's a [`compose.yaml`](compose.yaml) file in the repository that references a test bitcoin node. To test changes to the exporter in docker, run the following commands.
 
 ```
-docker-compose down
-docker-compose up --build
+docker compose down
+docker compose up --build
 ```
 
 If you see a lot of `ConnectionRefusedError` errors, run `chmod og+r test-bitcoin.conf`.

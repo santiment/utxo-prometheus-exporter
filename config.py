@@ -1,5 +1,15 @@
 import os
-from distutils.util import strtobool
+
+
+def strtobool(val: str) -> bool:
+    # distutils.util.strtobool was removed in Python 3.12.
+    val = val.lower()
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return True
+    if val in ("n", "no", "f", "false", "off", "0"):
+        return False
+    raise ValueError(f"invalid truth value {val!r}")
+
 
 # Set up logging to look similar to bitcoin logs (UTC).
 LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
@@ -16,7 +26,6 @@ HASHPS_BLOCKS = [int(b) for b in os.environ.get("HASHPS_BLOCKS", "-1,1,120").spl
 SMART_FEES = [int(f) for f in os.environ.get("SMARTFEE_BLOCKS", "2,3,5,20").split(",") if f != ""]
 METRICS_ADDR = os.environ.get("METRICS_ADDR", "")  # empty = any address
 METRICS_PORT = int(os.environ.get("METRICS_PORT", "9332"))
-RETRIES = int(os.environ.get("RETRIES", 5))
 TIMEOUT = int(os.environ.get("TIMEOUT", 30))
 RATE_LIMIT_SECONDS = int(os.environ.get("RATE_LIMIT", 5))
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
@@ -33,3 +42,4 @@ FETCH_TXSTATS = strtobool(os.environ.get("FETCH_TXSTATS", 'True'))
 FETCH_BANNED = strtobool(os.environ.get("FETCH_BANNED", 'True'))
 FETCH_SMART_FEES = strtobool(os.environ.get("FETCH_SMART_FEES", 'True'))
 FETCH_HASHP_BLOCKS = strtobool(os.environ.get("FETCH_HASHP_BLOCKS", 'True'))
+BAN_ADDRESS_METRICS = strtobool(os.environ.get("BAN_ADDRESS_METRICS", "false"))

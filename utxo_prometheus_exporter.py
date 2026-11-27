@@ -6,7 +6,7 @@
 # An exporter for Prometheus and Bitcoin Core.
 #
 # Copyright 2018 Kevin M. Gallagher
-# Copyright 2019,2020 Jeff Stein
+# Copyright 2019-2024 Jeff Stein
 #
 # Published at https://github.com/jvstein/bitcoin-prometheus-exporter
 # Licensed under BSD 3-clause (see LICENSE).
@@ -16,6 +16,7 @@
 #   python-bitcoinlib: LGPLv3
 #   riprova: MIT
 
+import base64
 import json
 import logging
 import time
@@ -57,6 +58,22 @@ def error_evaluator(e: Exception) -> bool:
     return isinstance(e, RETRY_EXCEPTIONS)
 
 
+class UsernamePasswordProxy(Proxy):
+    def __init__(self, *args, username=None, password=None, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        # Modify the authentication header used by the underlying Proxy class.
+        if username and password:
+            authpair = f"{username}:{password}".encode("utf-8")
+            authheader = b"Basic " + base64.b64encode(authpair)
+
+            # Try to make the name mangling resilient to class name changes.
+            key = next((k for k in self.__dict__.keys() if k.endswith("__auth_header")), None)
+            if not key:
+                raise Exception("Failed to find __auth_header in base class")
+            self.__dict__[key] = authheader
+
+
 @lru_cache(maxsize=1)
 def rpc_client_factory():
     # Configuration is done in this order of precedence:
@@ -74,12 +91,19 @@ def rpc_client_factory():
         return lambda: Proxy(btc_conf_file=UTXO_NODE_CONF_PATH, timeout=TIMEOUT)
     else:
         host = UTXO_NODE_RPC_HOST
-        host = "{}:{}@{}".format(UTXO_NODE_RPC_USER, UTXO_NODE_RPC_PASSWORD, host)
         if UTXO_NODE_RPC_PORT:
             host = "{}:{}".format(host, UTXO_NODE_RPC_PORT)
-        service_url = "{}://{}".format(UTXO_NODE_RPC_SCHEME, host)
+        service_url = f"{UTXO_NODE_RPC_SCHEME}://{host}"
         logger.info("Using environment configuration")
-        return lambda: Proxy(service_url=service_url, timeout=TIMEOUT)
+
+        # The underlying library can't parse the service_url parameter if the username or password
+        # are encoded. The subclass modifies the header directly instead.
+        return lambda: UsernamePasswordProxy(
+            service_url=service_url,
+            username=UTXO_NODE_RPC_USER,
+            password=UTXO_NODE_RPC_PASSWORD,
+            timeout=TIMEOUT
+        )
 
 
 def rpc_client():
@@ -129,9 +153,11 @@ def do_hashps_gauge(num_blocks: int) -> None:
         gauge.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(hps)
 
 
-def sigterm_handler(signal, frame) -> None:
-    logger.critical("Received SIGTERM. Exiting.")
-    sys.exit(0)
+def signal_handler(signum, frame) -> None:
+    signame = signal.Signals(signum).name
+    exit_code = 128 + signum
+    logger.critical(f"Received {signame}. Exiting.")
+    sys.exit(exit_code)
 
 def exception_count(e: Exception) -> None:
     err_type = type(e)
@@ -209,6 +235,9 @@ def fetch_mempoolinfo() -> None:
         UTXO_NODE_MEMPOOL_BYTES.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["bytes"])
         UTXO_NODE_MEMPOOL_SIZE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["size"])
         UTXO_NODE_MEMPOOL_USAGE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["usage"])
+        # Not reported by every UTXO node implementation.
+        if "mempoolminfee" in mempool:
+            UTXO_NODE_MEMPOOL_MINFEE.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["mempoolminfee"])
         if "unbroadcastcount" in mempool:
             UTXO_NODE_MEMPOOL_UNBROADCAST.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(mempool["unbroadcastcount"])
 
@@ -232,17 +261,21 @@ def fetch_txstats() -> None:
 def fetch_banned() -> None:
     banned = exec_rpc_call("listbanned")
     if banned is not None:
-        for ban in banned:
-            UTXO_NODE_BAN_CREATED.labels(
-                address=ban["address"],
-                reason=ban.get("ban_reason", "manually added"),
-                blockchain=UTXO_NODE_BLOCKCHAIN_NAME
-            ).set(ban["ban_created"])
-            UTXO_NODE_BANNED_UNTIL.labels(
-                address=ban["address"],
-                reason=ban.get("ban_reason", "manually added"),
-                blockchain=UTXO_NODE_BLOCKCHAIN_NAME
-            ).set(ban["banned_until"])
+        UTXO_NODE_BANNED_PEERS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(len(banned))
+        if BAN_ADDRESS_METRICS:
+            for ban in banned:
+                if UTXO_NODE_BAN_CREATED:
+                    UTXO_NODE_BAN_CREATED.labels(
+                        address=ban["address"],
+                        reason=ban.get("ban_reason", "manually added"),
+                        blockchain=UTXO_NODE_BLOCKCHAIN_NAME
+                    ).set(ban["ban_created"])
+                if UTXO_NODE_BANNED_UNTIL:
+                    UTXO_NODE_BANNED_UNTIL.labels(
+                        address=ban["address"],
+                        reason=ban.get("ban_reason", "manually added"),
+                        blockchain=UTXO_NODE_BLOCKCHAIN_NAME
+                    ).set(ban["banned_until"])
 
 
 def fetch_smart_fees() -> None:
@@ -288,13 +321,13 @@ def fetch(fetch_function):
         logger.info("Fetching metric...")
         fetch_function()
     except riprova.exceptions.RetryError as e:
-        logger.error("Fetch failed during retry. Cause: " + str(e))
+        logger.exception("Fetch failed during retry.")
         exception_count(e)
     except JSONRPCError as e:
-        logger.debug("RPC error refresh", exc_info=True)
+        logger.exception("RPC error refresh", exc_info=True)
         exception_count(e)
     except json.decoder.JSONDecodeError as e:
-        logger.error("RPC call did not return JSON. Bad credentials? " + str(e))
+        logger.exception("RPC call did not return JSON. Bad credentials?")
         sys.exit(1)
 
 def main():
@@ -302,8 +335,9 @@ def main():
     logging.Formatter.converter = time.gmtime
     logger.setLevel(LOG_LEVEL)
 
-    # Handle SIGTERM gracefully.
-    signal.signal(signal.SIGTERM, sigterm_handler)
+    # Handle signals gracefully.
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
 
     app = make_wsgi_app()
 

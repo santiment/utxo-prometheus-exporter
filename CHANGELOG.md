@@ -1,6 +1,14 @@
 # Changelog
 Changes to the project.
 
+## [1.2.0] - 2026-11-27
+
+### Added
+- `utxo_node_headers`: height of the best block header known to the node (`getblockchaininfo.headers`).
+  Alert on `utxo_node_headers - utxo_node_blocks` to catch a node that has stopped validating while the
+  network moves on; see the README.
+
+
 ## [1.1.0] - 2026-11-27
 
 Merged upstream [jvstein/bitcoin-prometheus-exporter] up to `6e2e556` (v0.9.0 + #42). Upstream entries

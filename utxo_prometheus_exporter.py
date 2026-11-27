@@ -184,6 +184,8 @@ def fetch_blockchaininfo() -> None:
     blockchaininfo = exec_rpc_call("getblockchaininfo")
     if blockchaininfo is not None:
         UTXO_NODE_BLOCKS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["blocks"])
+        if "headers" in blockchaininfo:
+            UTXO_NODE_HEADERS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["headers"])
         UTXO_NODE_DIFFICULTY.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["difficulty"])
         UTXO_NODE_SIZE_ON_DISK.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(blockchaininfo["size_on_disk"])
         UTXO_NODE_VERIFICATION_PROGRESS.labels(blockchain=UTXO_NODE_BLOCKCHAIN_NAME).set(

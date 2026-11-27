@@ -6,6 +6,10 @@ from config import BAN_ADDRESS_METRICS
 METRIC_PREFIX = "utxo_node"
 
 UTXO_NODE_BLOCKS = Gauge(f"{METRIC_PREFIX}_blocks", "Block height", labelnames=["blockchain"])
+# headers - blocks > 0 for a sustained period means the node knows of blocks it has not validated (stuck sync).
+UTXO_NODE_HEADERS = Gauge(
+    f"{METRIC_PREFIX}_headers", "Height of the best block header the node has received from peers", labelnames=["blockchain"]
+)
 UTXO_NODE_DIFFICULTY = Gauge(f"{METRIC_PREFIX}_difficulty", "Difficulty", labelnames=["blockchain"])
 UTXO_NODE_PEERS = Gauge(f"{METRIC_PREFIX}_peers", "Number of peers", labelnames=["blockchain"])
 UTXO_NODE_CONN_IN = Gauge(f"{METRIC_PREFIX}_conn_in", "Number of connections in", labelnames=["blockchain"])

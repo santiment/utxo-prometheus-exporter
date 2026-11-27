@@ -92,6 +92,21 @@ spec:
               value: "9335"
 ```
 
+## Alerting on a stuck node
+
+`utxo_node_blocks` alone can't distinguish a stuck node from a quiet network: Bitcoin regularly goes over
+an hour without a block. `utxo_node_headers` is the best header height the node has heard of from its peers,
+so a gap that stays open means the node is receiving blocks but not validating them:
+
+```yaml
+- alert: utxo-node-behind-headers
+  expr: (utxo_node_headers - utxo_node_blocks) > 2
+  for: 15m
+```
+
+A node that loses all its peers stops receiving headers too, so this alert stays quiet. Keep a block-age
+alert (e.g. `changes(utxo_node_blocks[2h]) == 0`) and a check on `utxo_node_peers` alongside it.
+
 ## Basic Testing
 There's a [`compose.yaml`](compose.yaml) file in the repository that references a test bitcoin node. To test changes to the exporter in docker, run the following commands.
 
